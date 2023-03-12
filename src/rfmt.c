@@ -34,7 +34,7 @@ static void cvt_s(int code, va_list *app, int put(int c, void *cl), void *cl,
 {
     char *str = va_arg(*app, char *);
     rassert(str);
-    fmt_puts(str, strlen(str), put, cl, flags, width, precision);
+    rfmt_puts(str, strlen(str), put, cl, flags, width, precision);
 }
 
 static void cvt_d(int code, va_list *app, int put(int c, void *cl), void *cl,
@@ -57,7 +57,7 @@ static void cvt_d(int code, va_list *app, int put(int c, void *cl), void *cl,
     } while ((m /= 10) > 0);
 
     if (val < 0) *--p = '-';
-    fmt_putd(p, (buf + sizeof(buf)) - p, put, cl, flags, width, precision);
+    rfmt_putd(p, (buf + sizeof(buf)) - p, put, cl, flags, width, precision);
 }
 
 static void cvt_u(int code, va_list *app, int put(int c, void *cl), void *cl,
@@ -70,7 +70,7 @@ static void cvt_u(int code, va_list *app, int put(int c, void *cl), void *cl,
     do {
         *--p = m % 10 + '0';
     } while ((m /= 10) > 0);
-    fmt_putd(p, (buf + sizeof(buf)) - p, put, cl, flags, width, precision);
+    rfmt_putd(p, (buf + sizeof(buf)) - p, put, cl, flags, width, precision);
 }
 
 static void cvt_o(int code, va_list *app, int put(int c, void *cl), void *cl,
@@ -83,7 +83,7 @@ static void cvt_o(int code, va_list *app, int put(int c, void *cl), void *cl,
     do {
         *--p = (m & 0x7) + '0';
     } while ((m >>= 3) != 0);
-    fmt_putd(p, (buf + sizeof(buf)) - p, put, cl, flags, width, precision);
+    rfmt_putd(p, (buf + sizeof(buf)) - p, put, cl, flags, width, precision);
 }
 
 static void cvt_x(int code, va_list *app, int put(int c, void *cl), void *cl,
@@ -96,7 +96,7 @@ static void cvt_x(int code, va_list *app, int put(int c, void *cl), void *cl,
     do {
         *--p = "0123456789abcdef"[m & 0xf];
     } while ((m >>= 4) != 0);
-    fmt_putd(p, (buf + sizeof(buf)) - p, put, cl, flags, width, precision);
+    rfmt_putd(p, (buf + sizeof(buf)) - p, put, cl, flags, width, precision);
 }
 
 static void cvt_p(int code, va_list *app, int put(int c, void *cl), void *cl,
@@ -109,7 +109,7 @@ static void cvt_p(int code, va_list *app, int put(int c, void *cl), void *cl,
     do {
         *--p = "0123456789abcdef"[m & 0xf];
     } while ((m >>= 4) != 0);
-    fmt_putd(p, (buf + sizeof(buf)) - p, put, cl, flags, width, precision);
+    rfmt_putd(p, (buf + sizeof(buf)) - p, put, cl, flags, width, precision);
 }
 
 static void cvt_c(int code, va_list *app, int put(int c, void *cl), void *cl,
@@ -139,7 +139,7 @@ static void cvt_f(int code, va_list *app, int put(int c, void *cl), void *cl,
         fmt[2] = (precision / 10) % 10 + '0';
         sprintf(buf, fmt, va_arg(*app, double));
     }
-    fmt_putd(buf, strlen(buf), put, cl, flags, width, precision);
+    rfmt_putd(buf, strlen(buf), put, cl, flags, width, precision);
 }
 
 /* data */
@@ -165,8 +165,8 @@ static T ConvertTable[256] = {
     /* 120-127 */ cvt_x, 0, 0, 0,     0,     0,     0,     0};
 
 /* functions */
-void fmt_puts(char const *str, int len, int put(int c, void *cl), void *cl,
-              unsigned char flags[256], int width, int precision)
+void rfmt_puts(char const *str, int len, int put(int c, void *cl), void *cl,
+               unsigned char flags[256], int width, int precision)
 {
     rassert(str);
     rassert(len >= 0);
@@ -188,39 +188,39 @@ void fmt_puts(char const *str, int len, int put(int c, void *cl), void *cl,
     if (flags['-']) PAD(width - len, ' ');
 }
 
-void fmt_fmt(int put(int c, void *cl), void *cl, char const *fmt, ...)
+void rfmt_fmt(int put(int c, void *cl), void *cl, char const *fmt, ...)
 {
     va_list ap;
     va_start(ap, fmt);
-    fmt_vfmt(put, cl, fmt, ap);
+    rfmt_vfmt(put, cl, fmt, ap);
     va_end(ap);
 }
 
 static int outc(int c, void *cl) { return putc(c, (FILE *)cl); }
 
-void fmt_print(char const *fmt, ...)
+void rfmt_print(char const *fmt, ...)
 {
     va_list ap;
     va_start(ap, fmt);
-    fmt_vfmt(outc, stdout, fmt, ap);
+    rfmt_vfmt(outc, stdout, fmt, ap);
     va_end(ap);
 }
 
-void fmt_fprint(FILE *stream, char const *fmt, ...)
+void rfmt_fprint(FILE *stream, char const *fmt, ...)
 {
     va_list ap;
     va_start(ap, fmt);
-    fmt_vfmt(outc, stream, fmt, ap);
+    rfmt_vfmt(outc, stream, fmt, ap);
     va_end(ap);
 }
 
-int fmt_sfmt(char *buf, int size, char const *fmt, ...)
+int rfmt_sfmt(char *buf, int size, char const *fmt, ...)
 {
     va_list ap;
     int     len;
 
     va_start(ap, fmt);
-    len = fmt_vsfmt(buf, size, fmt, ap);
+    len = rfmt_vsfmt(buf, size, fmt, ap);
     va_end(ap);
     return len;
 }
@@ -233,7 +233,7 @@ static int insert(int c, void *cl)
     return c;
 }
 
-int fmt_vsfmt(char *buf, int size, char const *fmt, va_list ap)
+int rfmt_vsfmt(char *buf, int size, char const *fmt, va_list ap)
 {
     struct Buf_S cl;
     rassert(buf);
@@ -243,20 +243,20 @@ int fmt_vsfmt(char *buf, int size, char const *fmt, va_list ap)
     cl.buf = cl.bp = buf;
     cl.size        = size;
 
-    fmt_vfmt(insert, &cl, fmt, ap);
+    rfmt_vfmt(insert, &cl, fmt, ap);
     insert(0, &cl);
 
     return cl.bp - cl.buf - 1;
 }
 
-char *fmt_string(char const *fmt, ...)
+char *rfmt_string(char const *fmt, ...)
 {
     char   *str;
     va_list ap;
     rassert(fmt);
 
     va_start(ap, fmt);
-    str = fmt_vstring(fmt, ap);
+    str = rfmt_vstring(fmt, ap);
     va_end(ap);
     return str;
 }
@@ -273,13 +273,13 @@ static int append(int c, void *cl)
     return c;
 }
 
-char *fmt_vstring(char const *fmt, va_list ap)
+char *rfmt_vstring(char const *fmt, va_list ap)
 {
     struct Buf_S cl;
     rassert(fmt);
     cl.size = 256;
     cl.buf = cl.bp = ALLOC(cl.size);
-    fmt_vfmt(append, &cl, fmt, ap);
+    rfmt_vfmt(append, &cl, fmt, ap);
     append(0, &cl);
     return RESIZE(cl.buf, cl.bp - cl.buf);
 }
@@ -290,7 +290,7 @@ char *fmt_vstring(char const *fmt, va_list ap)
 /* #define MAKE_POINTER_FROM_VA_LIST_ARG(arg) (&(arg)) */
 /* #endif */
 
-void fmt_vfmt(int put(int c, void *cl), void *cl, char const *fmt, va_list ap)
+void rfmt_vfmt(int put(int c, void *cl), void *cl, char const *fmt, va_list ap)
 {
     rassert(put);
     rassert(fmt);
@@ -355,7 +355,7 @@ void fmt_vfmt(int put(int c, void *cl), void *cl, char const *fmt, va_list ap)
     }
 }
 
-T fmt_register(int code, T newcvt)
+T rfmt_register(int code, T newcvt)
 {
     T old;
 
@@ -365,8 +365,8 @@ T fmt_register(int code, T newcvt)
     return old;
 }
 
-void fmt_putd(char const *str, int len, int put(int c, void *cl), void *cl,
-              unsigned char flags[256], int width, int precision)
+void rfmt_putd(char const *str, int len, int put(int c, void *cl), void *cl,
+               unsigned char flags[256], int width, int precision)
 {
     int sign;
     rassert(str);
