@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#include "rarena.h"
+#include "rlib/rarena.h"
 
 int main(int argc, char *argv[])
 {
