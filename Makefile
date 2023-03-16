@@ -3,7 +3,7 @@ ARM_CC = arm-gcc
 FLAGS = -g -fPIC -Wall -Werror -I inc -O3
 BASE_SRC = src/rassert.c src/rexcept.c src/rarith.c src/ratom.c \
 		   src/rarena.c src/rtest.c src/rtools.c src/rlog.c \
-		   src/rvector.c src/rrandom.c
+		   src/rvector.c src/rrandom.c src/rsha256.c
 MEM_SRC = src/rmem.c
 MEMCHK_SRC = src/rmemchk.c
 
