@@ -5,7 +5,7 @@
 
 #include "rassert.h"
 
-#define T Rsha256_T
+#define T RSha256_T
 
 #define SHIFT_R(x, n) (x >> n)
 #define ROTATE_R(x, n) ((x >> n) | (x << ((sizeof(x) << 3) - n)))
