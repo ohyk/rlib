@@ -305,10 +305,10 @@ void rfmt_vfmt(int put(int c, void *cl), void *cl, char const *fmt, va_list ap)
             memset(flags, '\0', sizeof(flags));
 
             if (FmtFlags) {
-                unsigned char c = *fmt;
-                for (; c && strchr(FmtFlags, c); c = *++fmt) {
-                    rassert(flags[c] < 255);
-                    flags[c]++;
+                unsigned char ch = *fmt;
+                for (; ch && strchr(FmtFlags, ch); ch = *++fmt) {
+                    rassert(flags[ch] < 255);
+                    flags[ch]++;
                 }
             }
 
@@ -348,9 +348,10 @@ void rfmt_vfmt(int put(int c, void *cl), void *cl, char const *fmt, va_list ap)
             c = *fmt++;
             rassert(ConvertTable[c]);
             /* va_lsit pointer */
-            va_list apcopy;
-            va_copy(apcopy, ap);
-            (*ConvertTable[c])(c, &apcopy, put, cl, flags, width, precision);
+            /* va_list apcopy; */
+            /* va_copy(apcopy, ap); */
+            /* (*ConvertTable[c])(c, &apcopy, put, cl, flags, width, precision); */
+            (*ConvertTable[c])(c, &ap, put, cl, flags, width, precision);
         }
     }
 }
