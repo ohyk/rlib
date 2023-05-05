@@ -29,18 +29,18 @@ struct Buf_S
     } while (0)
 
 /* static functions */
-static void cvt_s(int code, va_list *app, int put(int c, void *cl), void *cl,
+static void cvt_s(int code, RVaListBox_T *boxp, int put(int c, void *cl), void *cl,
                   unsigned char flags[], int width, int precision)
 {
-    char *str = va_arg(*app, char *);
+    char *str = va_arg(boxp->ap, char *);
     rassert(str);
     rfmt_puts(str, strlen(str), put, cl, flags, width, precision);
 }
 
-static void cvt_d(int code, va_list *app, int put(int c, void *cl), void *cl,
+static void cvt_d(int code, RVaListBox_T *boxp, int put(int c, void *cl), void *cl,
                   unsigned char flags[], int width, int precision)
 {
-    int      val = va_arg(*app, int);
+    int      val = va_arg(boxp->ap, int);
     unsigned m;
     char     buf[43];
     char    *p = buf + sizeof(buf);
@@ -60,10 +60,10 @@ static void cvt_d(int code, va_list *app, int put(int c, void *cl), void *cl,
     rfmt_putd(p, (buf + sizeof(buf)) - p, put, cl, flags, width, precision);
 }
 
-static void cvt_u(int code, va_list *app, int put(int c, void *cl), void *cl,
+static void cvt_u(int code, RVaListBox_T *boxp, int put(int c, void *cl), void *cl,
                   unsigned char flags[], int width, int precision)
 {
-    unsigned m = va_arg(*app, unsigned);
+    unsigned m = va_arg(boxp->ap, unsigned);
     char     buf[43];
     char    *p = buf + sizeof(buf);
 
@@ -73,10 +73,10 @@ static void cvt_u(int code, va_list *app, int put(int c, void *cl), void *cl,
     rfmt_putd(p, (buf + sizeof(buf)) - p, put, cl, flags, width, precision);
 }
 
-static void cvt_o(int code, va_list *app, int put(int c, void *cl), void *cl,
+static void cvt_o(int code, RVaListBox_T *boxp, int put(int c, void *cl), void *cl,
                   unsigned char flags[], int width, int precision)
 {
-    unsigned m = va_arg(*app, unsigned);
+    unsigned m = va_arg(boxp->ap, unsigned);
     char     buf[43];
     char    *p = buf + sizeof(buf);
 
@@ -86,10 +86,10 @@ static void cvt_o(int code, va_list *app, int put(int c, void *cl), void *cl,
     rfmt_putd(p, (buf + sizeof(buf)) - p, put, cl, flags, width, precision);
 }
 
-static void cvt_x(int code, va_list *app, int put(int c, void *cl), void *cl,
+static void cvt_x(int code, RVaListBox_T *boxp, int put(int c, void *cl), void *cl,
                   unsigned char flags[], int width, int precision)
 {
-    unsigned m = va_arg(*app, unsigned);
+    unsigned m = va_arg(boxp->ap, unsigned);
     char     buf[43];
     char    *p = buf + sizeof(buf);
 
@@ -99,10 +99,10 @@ static void cvt_x(int code, va_list *app, int put(int c, void *cl), void *cl,
     rfmt_putd(p, (buf + sizeof(buf)) - p, put, cl, flags, width, precision);
 }
 
-static void cvt_p(int code, va_list *app, int put(int c, void *cl), void *cl,
+static void cvt_p(int code, RVaListBox_T *boxp, int put(int c, void *cl), void *cl,
                   unsigned char flags[], int width, int precision)
 {
-    uintptr_t m = (uintptr_t)va_arg(*app, void *);
+    uintptr_t m = (uintptr_t)va_arg(boxp->ap, void *);
     char      buf[43];
     char     *p = buf + sizeof(buf);
 
@@ -112,7 +112,7 @@ static void cvt_p(int code, va_list *app, int put(int c, void *cl), void *cl,
     rfmt_putd(p, (buf + sizeof(buf)) - p, put, cl, flags, width, precision);
 }
 
-static void cvt_c(int code, va_list *app, int put(int c, void *cl), void *cl,
+static void cvt_c(int code, RVaListBox_T *boxp, int put(int c, void *cl), void *cl,
                   unsigned char flags[], int width, int precision)
 {
     if (width == INT_MAX) width = 0;
@@ -121,11 +121,11 @@ static void cvt_c(int code, va_list *app, int put(int c, void *cl), void *cl,
         width      = -width;
     }
     if (!flags['-']) PAD(width - 1, ' ');
-    put((unsigned char)va_arg(*app, int), cl);
+    put((unsigned char)va_arg(boxp->ap, int), cl);
     if (flags['-']) PAD(width - 1, ' ');
 }
 
-static void cvt_f(int code, va_list *app, int put(int c, void *cl), void *cl,
+static void cvt_f(int code, RVaListBox_T *boxp, int put(int c, void *cl), void *cl,
                   unsigned char flags[], int width, int precision)
 {
     char buf[DBL_MAX_10_EXP + 1 + 1 + 99 + 1];
@@ -137,7 +137,7 @@ static void cvt_f(int code, va_list *app, int put(int c, void *cl), void *cl,
         fmt[4] = code;
         fmt[3] = precision % 10 + '0';
         fmt[2] = (precision / 10) % 10 + '0';
-        sprintf(buf, fmt, va_arg(*app, double));
+        sprintf(buf, fmt, va_arg(boxp->ap, double));
     }
     rfmt_putd(buf, strlen(buf), put, cl, flags, width, precision);
 }
@@ -190,38 +190,38 @@ void rfmt_puts(char const *str, int len, int put(int c, void *cl), void *cl,
 
 void rfmt_fmt(int put(int c, void *cl), void *cl, char const *fmt, ...)
 {
-    va_list ap;
-    va_start(ap, fmt);
-    rfmt_vfmt(put, cl, fmt, ap);
-    va_end(ap);
+    RVaListBox_T box;
+    va_start(box.ap, fmt);
+    rfmt_vfmt(put, cl, fmt, &box);
+    va_end(box.ap);
 }
 
 static int outc(int c, void *cl) { return putc(c, (FILE *)cl); }
 
 void rfmt_print(char const *fmt, ...)
 {
-    va_list ap;
-    va_start(ap, fmt);
-    rfmt_vfmt(outc, stdout, fmt, ap);
-    va_end(ap);
+    RVaListBox_T box;
+    va_start(box.ap, fmt);
+    rfmt_vfmt(outc, stdout, fmt, &box);
+    va_end(box.ap);
 }
 
 void rfmt_fprint(FILE *stream, char const *fmt, ...)
 {
-    va_list ap;
-    va_start(ap, fmt);
-    rfmt_vfmt(outc, stream, fmt, ap);
-    va_end(ap);
+    RVaListBox_T box;
+    va_start(box.ap, fmt);
+    rfmt_vfmt(outc, stream, fmt, &box);
+    va_end(box.ap);
 }
 
 int rfmt_sfmt(char *buf, int size, char const *fmt, ...)
 {
-    va_list ap;
-    int     len;
+    int          len;
+    RVaListBox_T box;
 
-    va_start(ap, fmt);
-    len = rfmt_vsfmt(buf, size, fmt, ap);
-    va_end(ap);
+    va_start(box.ap, fmt);
+    len = rfmt_vsfmt(buf, size, fmt, &box);
+    va_end(box.ap);
     return len;
 }
 
@@ -233,7 +233,7 @@ static int insert(int c, void *cl)
     return c;
 }
 
-int rfmt_vsfmt(char *buf, int size, char const *fmt, va_list ap)
+int rfmt_vsfmt(char *buf, int size, char const *fmt, RVaListBox_T *boxp)
 {
     struct Buf_S cl;
     rassert(buf);
@@ -243,7 +243,7 @@ int rfmt_vsfmt(char *buf, int size, char const *fmt, va_list ap)
     cl.buf = cl.bp = buf;
     cl.size        = size;
 
-    rfmt_vfmt(insert, &cl, fmt, ap);
+    rfmt_vfmt(insert, &cl, fmt, boxp);
     insert(0, &cl);
 
     return cl.bp - cl.buf - 1;
@@ -251,13 +251,13 @@ int rfmt_vsfmt(char *buf, int size, char const *fmt, va_list ap)
 
 char *rfmt_string(char const *fmt, ...)
 {
-    char   *str;
-    va_list ap;
+    char        *str;
+    RVaListBox_T box;
     rassert(fmt);
 
-    va_start(ap, fmt);
-    str = rfmt_vstring(fmt, ap);
-    va_end(ap);
+    va_start(box.ap, fmt);
+    str = rfmt_vstring(fmt, &box);
+    va_end(box.ap);
     return str;
 }
 
@@ -273,13 +273,13 @@ static int append(int c, void *cl)
     return c;
 }
 
-char *rfmt_vstring(char const *fmt, va_list ap)
+char *rfmt_vstring(char const *fmt, RVaListBox_T *boxp)
 {
     struct Buf_S cl;
     rassert(fmt);
     cl.size = 256;
     cl.buf = cl.bp = ALLOC(cl.size);
-    rfmt_vfmt(append, &cl, fmt, ap);
+    rfmt_vfmt(append, &cl, fmt, boxp);
     append(0, &cl);
     return RESIZE(cl.buf, cl.bp - cl.buf);
 }
@@ -290,7 +290,7 @@ char *rfmt_vstring(char const *fmt, va_list ap)
 /* #define MAKE_POINTER_FROM_VA_LIST_ARG(arg) (&(arg)) */
 /* #endif */
 
-void rfmt_vfmt(int put(int c, void *cl), void *cl, char const *fmt, va_list ap)
+void rfmt_vfmt(int put(int c, void *cl), void *cl, char const *fmt, RVaListBox_T *boxp)
 {
     rassert(put);
     rassert(fmt);
@@ -315,7 +315,7 @@ void rfmt_vfmt(int put(int c, void *cl), void *cl, char const *fmt, va_list ap)
             if (*fmt == '*' || isdigit(*fmt)) {
                 int n;
                 if (*fmt == '*') {
-                    n = va_arg(ap, int);
+                    n = va_arg(boxp->ap, int);
                     rassert(n != INT_MIN);
                     fmt++;
                 } else {
@@ -332,7 +332,7 @@ void rfmt_vfmt(int put(int c, void *cl), void *cl, char const *fmt, va_list ap)
             if (*fmt == '.' && (*++fmt == '*' || isdigit(*fmt))) {
                 int n;
                 if (*fmt == '*') {
-                    n = va_arg(ap, int);
+                    n = va_arg(boxp->ap, int);
                     rassert(n != INT_MAX);
                     fmt++;
                 } else {
@@ -351,7 +351,7 @@ void rfmt_vfmt(int put(int c, void *cl), void *cl, char const *fmt, va_list ap)
             /* va_list apcopy; */
             /* va_copy(apcopy, ap); */
             /* (*ConvertTable[c])(c, &apcopy, put, cl, flags, width, precision); */
-            (*ConvertTable[c])(c, &ap, put, cl, flags, width, precision);
+            (*ConvertTable[c])(c, boxp, put, cl, flags, width, precision);
         }
     }
 }

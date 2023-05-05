@@ -22,6 +22,14 @@ typedef enum { False, True } Bool_T;
 #define EOF (-1)
 #endif /* ifndef EOF */
 
+#ifndef RLIB_VA_LIST_BOX
+#define RLIB_VA_LIST_BOX 
+typedef struct RVaListBox_T
+{
+    va_list ap;
+} RVaListBox_T;
+#endif /* ifndef RLIB_VA_LIST_BOX */
+
 /*====================================================================*/
 /*
  * winNT dll export func
