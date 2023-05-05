@@ -12,6 +12,7 @@
 #include <limits.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <stdarg.h>
 
 #ifndef RLIB_HAS_BOOL_TYPE
 #define RLIB_HAS_BOOL_TYPE
