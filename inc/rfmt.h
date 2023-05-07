@@ -17,7 +17,7 @@ typedef void (*T)(int code, RVaListBox_T *boxp, int put(int c, void *cl), void *
                   unsigned char flags[256], int width, int precision);
 
 extern RLIB_EXPORT_FLAG RExcept_T const RFmtOverflow;
-extern RLIB_EXPORT_FLAG char           *RFmt_flags;
+extern RLIB_EXPORT_FLAG char           *RFmtFlags;
 
 extern RLIB_EXPORT_FLAG void rfmt_fmt(int put(int c, void *cl), void *cl, char const *fmt,
                                       ...);

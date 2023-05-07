@@ -143,8 +143,8 @@ static void cvt_f(int code, RVaListBox_T *boxp, int put(int c, void *cl), void *
 }
 
 /* data */
-char           *FmtFlags     = "-+ 0";
-const RExcept_T RFmtOverflow = {"Formatting Overflow"};
+char           *RFmtFlags    = "-+ 0";
+RExcept_T const RFmtOverflow = {"Formatting Overflow"};
 
 static T ConvertTable[256] = {
     /*   0-  7 */ 0,     0, 0, 0,     0,     0,     0,     0,
@@ -304,9 +304,9 @@ void rfmt_vfmt(int put(int c, void *cl), void *cl, char const *fmt, RVaListBox_T
 
             memset(flags, '\0', sizeof(flags));
 
-            if (FmtFlags) {
+            if (RFmtFlags) {
                 unsigned char ch = *fmt;
-                for (; ch && strchr(FmtFlags, ch); ch = *++fmt) {
+                for (; ch && strchr(RFmtFlags, ch); ch = *++fmt) {
                     rassert(flags[ch] < 255);
                     flags[ch]++;
                 }
