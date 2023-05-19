@@ -166,7 +166,7 @@ static T ConvertTable[256] = {
 
 /* functions */
 void rfmt_puts(char const *str, int len, int put(int c, void *cl), void *cl,
-               unsigned char flags[256], int width, int precision)
+               unsigned char flags[RFMT_FLAGS_SIZE], int width, int precision)
 {
     rassert(str);
     rassert(len >= 0);
@@ -299,7 +299,7 @@ void rfmt_vfmt(int put(int c, void *cl), void *cl, char const *fmt, RVaListBox_T
         if (*fmt != '%' || *++fmt == '%')
             put((unsigned char)*fmt++, cl);
         else {
-            unsigned char c, flags[256];
+            unsigned char c, flags[RFMT_FLAGS_SIZE];
             int           width = INT_MIN, precision = INT_MIN;
 
             memset(flags, '\0', sizeof(flags));
@@ -367,7 +367,7 @@ T rfmt_register(int code, T newcvt)
 }
 
 void rfmt_putd(char const *str, int len, int put(int c, void *cl), void *cl,
-               unsigned char flags[256], int width, int precision)
+               unsigned char flags[RFMT_FLAGS_SIZE], int width, int precision)
 {
     int sign;
     rassert(str);

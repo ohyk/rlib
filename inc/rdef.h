@@ -39,7 +39,11 @@ typedef struct RVaListBox_T
 
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
    //define something for Windows (32-bit and 64-bit, this part is common)
+#ifdef RLIB_MAKE_DLL
 #define RLIB_EXPORT_FLAG __declspec(dllexport)
+#else 
+#define RLIB_EXPORT_FLAG __declspec(dllimport)
+#endif
 #include <sys/types.h>
    #ifdef _WIN64
       //define something for Windows (64-bit only)
