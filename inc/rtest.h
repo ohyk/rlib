@@ -3,8 +3,11 @@
 #include "rdef.h"
 #include <stdint.h>
 
-
 #define RTEST_STATUS_STR(x) ((x) ? "OK" : "ERROR")
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /*====================================================================*/
 /*
@@ -251,5 +254,10 @@ extern RLIB_EXPORT_FLAG void rtest_mem_print(void);
 
 #define RTEST_ALLOC(nbytes) \
     rtest_mem_alloc((nbytes), __FILE__, __LINE__)
+
+#ifdef __cplusplus
+}
+#endif
+
 
 #endif /* ifndef RTEST_H */

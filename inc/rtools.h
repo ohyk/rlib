@@ -11,6 +11,11 @@
 #define RTOOLS_FREE FREE
 #endif /* ifndef RTOOLS_FREE */
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 /*====================================================================*/
 /*
  * Converting integer range overflow raise this exception
@@ -121,5 +126,9 @@ extern RLIB_EXPORT_FLAG int rtools_match(char const *regexp, char const *text);
 extern RLIB_EXPORT_FLAG int *rtools_kmp_make_jump(char const *dstr, int len);
 extern RLIB_EXPORT_FLAG int  rtools_kmp_find_string(char const *str, char const *dstr,
                                                     int const *jump);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* ifndef RTOOLS_H */

@@ -7,6 +7,10 @@
 #define T RVector_T
 typedef struct T *T;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* #ifdef RVECTOR_MEM */
 /*============================ Rvector Hooks =============================*/
 /*
@@ -66,6 +70,10 @@ extern RLIB_EXPORT_FLAG size_t rvector_capacity(T v);
 
 #ifdef RVDEBUG
 void rvector_print_info(T v);
+#endif
+
+#ifdef __cplusplus
+}
 #endif
 
 #undef T
