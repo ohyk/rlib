@@ -7,9 +7,11 @@
 #include <string.h>
 #include <time.h>
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
-#include <io.h>
+#include <process.h> // for _getpid
+#define GETPID _getpid
 #else
 #include <unistd.h>
+#define GETPID getpid
 #endif
 
 #include "rassert.h"
@@ -94,13 +96,8 @@ static void output_error(Bool_T use_err, int err, Bool_T flush_stdout, char cons
     else
         *err_text = '\0';
 
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
-    snprintf(buf, BUF_SIZE + BUF_SIZE + BUF_SIZE, "[%lld]%s %s\n", (long long)time(NULL),
-             err_text, user_msg);
-#else
-    snprintf(buf, BUF_SIZE + BUF_SIZE + BUF_SIZE, "[%d:%lld]%s %s\n", getpid(),
+    snprintf(buf, BUF_SIZE + BUF_SIZE + BUF_SIZE, "[%d:%lld]%s %s\n", GETPID(),
              (long long)time(NULL), err_text, user_msg);
-#endif
 
     if (flush_stdout) fflush(stdout);  // flush any pending stdout
     fputs(buf, get_default_log()->log);
