@@ -1,6 +1,10 @@
+#ifndef RASSERT_H
+#define RASSERT_H
+
 #ifdef NDEBUG
 #define rassert(e) ((void)0)
 #else 
+#include "rdef.h"
 #include "rexcept.h"
 #ifdef __cplusplus
 extern "C"
@@ -12,3 +16,5 @@ extern RLIB_EXPORT_FLAG void rassert(int e);
 }
 #endif
 #endif
+
+#endif /* end of include guard: RASSERT_H */
